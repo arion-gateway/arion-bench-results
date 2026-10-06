@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://agentgateway.dev/schema/config
+
+config:
+  logging: 
+    level: error
+
+binds:
+  - port: 8001
+    listeners:
+      - hostname: 192.168.100.1
+        routes:
+          # Match the incoming JRPC POST request from the agent
+          - name: everything-statico
+            backends:
+              - mcp:
+                  targets:
+                    - name: everything-statico
+                      mcp:
+                        host: http://192.168.200.2:80/mcp
+

@@ -1,0 +1,99 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Semplice Petstore API",
+    "description": "Versione ridotta con una singola operazione.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v3"
+    }
+  ],
+  "paths": {
+    "/pet/": {
+      "post": {
+        "tags": [
+          "adopt"
+        ],
+        "summary": "Adotta un animale tramite ID, con nome del proprietario",
+        "description": "Restituisce successo se possibile.",
+        "operationId": "postPetAdoption",
+	"requestBody": {
+	  "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserData"
+              }
+            }
+          } 
+	},
+        "responses": {
+          "200": {
+            "description": "Operazione riuscita",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Animale non trovato"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pet": {
+        "type": "object",
+        "required": [
+          "name",
+          "photoUrls"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 10
+          },
+          "name": {
+            "type": "string",
+            "example": "doggie"
+          },
+          "status": {
+            "type": "string",
+            "description": "Stato dell'animale nel negozio",
+            "enum": [
+              "available",
+              "pending",
+              "sold"
+            ]
+          },
+          "photoUrls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UserData": {
+        "type": "object",
+        "required": [
+          "passport_id"
+        ],
+        "properties": {
+          "passport_id": {
+            "type": "string",
+            "example": "AB123456"
+          }
+        }
+      }
+    }
+  }
+}

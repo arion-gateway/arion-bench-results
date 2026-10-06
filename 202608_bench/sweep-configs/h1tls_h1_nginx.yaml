@@ -1,0 +1,36 @@
+# Converted from local_perf_sweep_nginx_h1tls_h1.py
+# reviewed: gen_cores 16-38:2 -> 0-62:2 (generator must not be the bottleneck without compio)
+# reviewed: /usr/sbin/nginx -> /path/to/nginx-1.31.4/objs/nginx
+name: h1tls_h1_nginx
+
+vars:
+  duration: 30
+  backend_host: '192.168.200.2'
+  backend_port: 80
+  proxy_host: 'cnpp1.example'
+  proxy_port: 8443
+  nofile: 1000000
+  statico: '/path/to/statico'
+  plumbrs: '/path/to/plumbrs'
+  backend_cores: '40-62:2'
+  proxy_cores: '17-63:2'
+  gen_cores: '0-62:2'
+
+sweep:
+  rpc: [4294967295, 100, 10, 1]
+  concurrency: [2048, 1024, 512, 256]
+
+settings:
+  repeat: 1
+  ready_timeout: 5
+
+services:
+  - name: backend
+    command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${backend_cores} ${statico} --ports ${backend_port} --threads 12 --runtime compio"'
+    ready: ${backend_host}:${backend_port}
+  - name: proxy
+    command: 'sudo -n ip netns exec proxy bash -c "ulimit -n ${nofile}; exec taskset -c ${proxy_cores} /path/to/nginx-1.31.4/objs/nginx -c proxy-configs/nginx-h1.conf"'
+    ready: ${proxy_host}:${proxy_port}
+
+generator:
+  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 24 --duration ${duration} --concurrency ${concurrency} --rpc ${rpc} --insecure --latency --stats-csv-header https://${proxy_host}:${proxy_port}/"'

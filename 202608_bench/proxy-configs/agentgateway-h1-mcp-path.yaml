@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://agentgateway.dev/schema/config
+
+config:
+  logging: 
+    level: error
+
+binds:
+  - port: 8001
+    listeners:
+      - hostname: 192.168.100.1
+        routes:
+          # Match the incoming JRPC POST request from the agent
+          - name: pet-store 
+            matches:
+              - method: POST
+                path:
+                  pathPrefix: "/pet/"
+            backends:
+              - mcp:
+                  targets:
+                    - name: openapi 
+                      openapi:
+                        schema:
+                          #file: /path/to/202608_bench/openapi-schema.json
+                          file: /path/to/202608_bench/openapi-path.json
+                          #file: /path/to/202608_bench/openapi-query.json
+                          #file: /path/to/202608_bench/openapi-body.json
+                          #file: /path/to/202608_bench/openapi-path-query-body.json
+                        host: 192.168.200.2:80 # Your upstream REST target
+
