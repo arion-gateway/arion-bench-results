@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://agentgateway.dev/schema/config
+#
+# agentgateway equivalent of arion-h2.yaml / envoy-h2.yaml (h2tls_h1 +
+# h2tls_h2tls). One H2-over-TLS listener on :8443; the request path picks
+# the upstream, same as the other proxies' -h2 configs:
+#   /h1 -> plaintext HTTP/1.1 to 192.168.200.2:80    (h2tls_h1)
+#   /h2 -> HTTP/2 over TLS  to 192.168.200.2:443     (h2tls_h2tls)
+# There is no plaintext :8000 listener here, matching arion-h2.yaml /
+# envoy-h2.yaml / haproxy-h2.cfg.
+#
+# HTTP/2 vs HTTP/1.1 on the downstream side is negotiated via ALPN, not an
+# explicit listener setting -- agentgateway doesn't have an Envoy-style
+# codec_type lock, so this one listener would also happily serve h1tls_h1
+# traffic if pointed at it; it's kept as a dedicated file to mirror the
+# other proxies' file layout and the sweep-configs/*_h2tls_*.yaml naming.
+#
+# NOTE: unlike arion-h2.yaml / haproxy-h2.cfg, agentgateway's backend HTTP
+# policy (LocalBackendPolicies.http) has no max-concurrent-streams knob, so
+# the upstream H2 leg below is NOT capped at 32 streams the way the other
+# proxies are. Same asymmetry category as the nginx-h2.conf vs
+# haproxy-h2.cfg downstream-limit mismatch noted in this repo's README.
+
+config:
+  logging:
+    level: error
+
+binds:
+  - port: 8443
+    listeners:
+      - hostname: cnpp1.example
+        protocol: HTTPS
+        tls:
+          cert: /etc/nginx/certs/cnpp1.crt
+          key: /etc/nginx/certs/cnpp1.key
+        routes:
+          # h2tls_h1: cleartext HTTP/1.1 upstream
+          - name: backend-h1
+            matches:
+              - path:
+                  pathPrefix: "/h1"
+            backends:
+              - host: 192.168.200.2:80
+
+          # h2tls_h2tls: HTTP/2 over TLS upstream
+          - name: backend-h2
+            matches:
+              - path:
+                  pathPrefix: "/h2"
+            backends:
+              - host: 192.168.200.2:443
+                policies:
+                  backendTLS:
+                    hostname: cnpp1.example
+                    insecure: true # self-signed test cert, no CA bundle wired up
+                    alpn: ["h2"]

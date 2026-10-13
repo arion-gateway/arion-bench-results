@@ -1,0 +1,35 @@
+# New: agentgateway added to the baseline family, modeled on h1_h1_arion.yaml
+# / h1_h1_envoy.yaml with the same vars/sweep/settings/generator.
+name: h1_h1_agentgateway
+
+vars:
+  duration: 30
+  backend_host: '192.168.200.2'
+  backend_port: 80
+  proxy_host: '192.168.100.1'
+  proxy_port: 8000
+  nofile: 1000000
+  statico: '/path/to/statico'
+  plumbrs: '/path/to/plumbrs'
+  backend_cores: '40-62:2'
+  proxy_cores: '17-63:2'
+  gen_cores: '0-62:2'
+
+sweep:
+  rpc: [4294967295, 100, 10, 1]
+  concurrency: [2048, 1024, 512, 256]
+
+settings:
+  repeat: 1
+  ready_timeout: 5
+
+services:
+  - name: backend
+    command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${backend_cores} ${statico} --ports ${backend_port} --threads 12 --runtime compio"'
+    ready: ${backend_host}:${backend_port}
+  - name: proxy
+    command: 'sudo -n ip netns exec proxy bash -c "ulimit -n ${nofile}; exec taskset -c ${proxy_cores} /path/to/agentgateway/target/release/agentgateway -f proxy-configs/agentgateway-h1.yaml"'
+    ready: ${proxy_host}:${proxy_port}
+
+generator:
+  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 24 --duration ${duration} --concurrency ${concurrency} --rpc ${rpc} --latency --stats-csv-header http://${proxy_host}:${proxy_port}/"'
