@@ -33,4 +33,4 @@ services:
     ready: ${proxy_host}:${proxy_port}
 
 generator:
-  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 24 --duration ${duration} --concurrency ${concurrency} --rpc ${rpc} --insecure --http2 --latency --stats-csv-header https://${proxy_host}:${proxy_port}/h2"'
+  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 32 --duration ${duration} --concurrency ${concurrency} --rpc ${rpc} --insecure --http2 --latency --stats-csv-header https://${proxy_host}:${proxy_port}/h2"'
