@@ -1,6 +1,6 @@
 # Converted from local_perf_sweep_nginx_h1_h1.py
 # reviewed: gen_cores 16-38:2 -> 0-62:2 (generator must not be the bottleneck without compio)
-# reviewed: /usr/sbin/nginx -> /path/to/nginx-1.31.4/objs/nginx
+# reviewed: /usr/sbin/nginx -> /home/francesco/code/nginx-1.31.4/objs/nginx
 # reviewed: nginx-h1.yaml -> nginx-h1.conf (the .yaml does not exist; nginx cannot read a YAML config)
 name: h1_h1_nginx
 
@@ -11,8 +11,8 @@ vars:
   proxy_host: '192.168.100.1'
   proxy_port: 8000
   nofile: 1000000
-  statico: '/path/to/statico'
-  plumbrs: '/path/to/plumbrs'
+  statico: '/home/francesco/.cargo/bin/statico'
+  plumbrs: '/home/francesco/.cargo/bin/plumbrs'
   backend_cores: '40-62:2'
   proxy_cores: '17-63:2'
   gen_cores: '0-62:2'
@@ -30,7 +30,7 @@ services:
     command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${backend_cores} ${statico} --ports ${backend_port} --threads 12 --runtime compio"'
     ready: ${backend_host}:${backend_port}
   - name: proxy
-    command: 'sudo -n ip netns exec proxy bash -c "ulimit -n ${nofile}; exec taskset -c ${proxy_cores} /path/to/nginx-1.31.4/objs/nginx -c proxy-configs/nginx-h1.conf"'
+    command: 'sudo -n ip netns exec proxy bash -c "ulimit -n ${nofile}; exec taskset -c ${proxy_cores} /home/francesco/code/nginx-1.31.4/objs/nginx -c /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/nginx-h1.conf"'
     ready: ${proxy_host}:${proxy_port}
 
 generator:

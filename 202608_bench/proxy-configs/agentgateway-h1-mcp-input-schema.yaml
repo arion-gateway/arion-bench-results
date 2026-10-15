@@ -21,10 +21,10 @@ binds:
                     - name: openapi 
                       openapi:
                         schema:
-                          file: /path/to/202608_bench/openapi-schema.json
-                          #file: /path/to/202608_bench/openapi-path.json
-                          #file: /path/to/202608_bench/openapi-query.json
-                          #file: /path/to/202608_bench/openapi-body.json
-                          #file: /path/to/202608_bench/openapi-path-query-body.json
+                          file: /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/openapi-schema.json
+                          #file: /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/openapi-path.json
+                          #file: /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/openapi-query.json
+                          #file: /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/openapi-body.json
+                          #file: /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/openapi-path-query-body.json
                         host: 192.168.200.2:80 # Your upstream REST target
 

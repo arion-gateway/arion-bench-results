@@ -9,8 +9,8 @@ vars:
   proxy_host: '192.168.100.1'
   proxy_port: 8000
   nofile: 1000000
-  statico: '/path/to/statico'
-  plumbrs: '/path/to/plumbrs'
+  statico: '/home/francesco/.cargo/bin/statico'
+  plumbrs: '/home/francesco/.cargo/bin/plumbrs'
   backend_cores: '40-62:2'
   proxy_cores: '17-63:2'
   gen_cores: '0-62:2'
@@ -28,7 +28,7 @@ services:
     command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${backend_cores} ${statico} --ports ${backend_port} --threads 12 --runtime compio"'
     ready: ${backend_host}:${backend_port}
   - name: proxy
-    command: 'sudo -n ip netns exec proxy bash -c "ulimit -n ${nofile}; exec taskset -c ${proxy_cores} /path/to/arion/target/release/arion -c proxy-configs/arion-h1-ext-proc-headers.yaml"'
+    command: 'sudo -n ip netns exec proxy bash -c "ulimit -n ${nofile}; exec taskset -c ${proxy_cores} /home/francesco/code/arion/target/release-max/arion -c /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/arion-h1-ext-proc-headers.yaml"'
     ready: ${proxy_host}:${proxy_port}
 
 generator:
