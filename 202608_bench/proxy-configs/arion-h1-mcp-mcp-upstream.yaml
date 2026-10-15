@@ -40,6 +40,7 @@ envoy_bootstrap:
                             description: "everything-statico mcp server"
                             transport: StreamableHttp
                             url: http://192.168.200.2:80/mcp
+                            cluster: pet_store_cluster
                             cache_duration: 10s
                     - name: envoy.filters.http.router
                       typedConfig:
