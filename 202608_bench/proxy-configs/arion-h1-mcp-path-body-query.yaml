@@ -35,9 +35,12 @@ envoy_bootstrap:
                         server_info:
                           name: "arion-mcp-gateway"
                           version: "0.0.1"
+                        tools_mode: {}
                         #cluster_header: "x-mcp-target-cluster"
                         tools:
                           - name: "pet_store"
+                            namespace: "pet_store"
+                            disclosure_mode: EAGER
                             description: "Adopt a pet"
                             rest_backend:
                               cluster: pet_store_cluster 

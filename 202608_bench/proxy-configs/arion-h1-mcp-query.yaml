@@ -35,22 +35,25 @@ envoy_bootstrap:
                         server_info:
                           name: "arion-mcp-gateway"
                           version: "0.0.1"
+                        tools_mode: {}
                         #cluster_header: "x-mcp-target-cluster"
                         tools:
                           - name: "pet_store"
+                            namespace: "pet_store"
+                            disclosure_mode: EAGER
                             description: "Adopt a pet"
                             rest_backend:
-                              cluster: pet_store_cluster 
+                              cluster: pet_store_cluster
                               method: POST
-                              #path: "/v1/forecast/{{petId}}"
+                              path: "/pet/"
                               #body_template:
                               #  inline_string: >-
                               #    {
                               #      "passportId: {{passportId}}"
                               #    }
                               query_params:
-                                - name: humanName 
-                                  source: humanName 
+                                - name: humanName
+                                  source: humanName
                             input_schema:
                               inline_string: >-
                                 {
@@ -91,18 +94,18 @@ envoy_bootstrap:
                             direct_response:
                               status: 200
                               body:
-                                inline_string: "meow" 
+                                inline_string: "meow"
                           - match:
                               prefix: "/"
                             route:
-                              #cluster_header: x-mcp-target-cluster 
-                              cluster: pet_store_cluster 
- 
+                              #cluster_header: x-mcp-target-cluster
+                              cluster: pet_store_cluster
+
     clusters:
-      - name: pet_store_cluster 
+      - name: pet_store_cluster
         connect_timeout: 0.25s
         type: STATIC
-        lb_policy: ROUND_ROBIN      
+        lb_policy: ROUND_ROBIN
         original_dst_lb_config:
           use_http_header: true
         load_assignment:
