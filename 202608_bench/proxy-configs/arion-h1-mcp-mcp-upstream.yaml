@@ -35,11 +35,13 @@ envoy_bootstrap:
                         server_info:
                           name: "arion-mcp-gateway"
                           version: "0.0.1"
+                        tools_mode: {}
                         dynamic_mcp_servers:
-                          - name: "everything-statico"
+                          - namespace: "everything-statico"
+                            tool_disclosure_mode: EAGER
                             description: "everything-statico mcp server"
                             transport: StreamableHttp
-                            url: http://192.168.200.2:80/mcp
+                            path: /mcp
                             cluster: pet_store_cluster
                             cache_duration: 10s
                     - name: envoy.filters.http.router
