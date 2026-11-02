@@ -13,9 +13,9 @@ vars:
   nofile: 1000000
   statico: '/home/francesco/.cargo/bin/statico'
   plumbrs: '/home/francesco/.cargo/bin/plumbrs'
-  backend_cores: '34-62:2'
-  proxy_cores: '17-63:2'
-  gen_cores: '0-32:2'
+  backend_cores: '32-62:2'
+  proxy_cores: '1-63:2'
+  gen_cores: '0-30:2'
 
 sweep:
   rpc: [4294967295]
@@ -34,4 +34,4 @@ services:
     ready: ${proxy_host}:${proxy_port}
 
 generator:
-  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 32 --duration ${duration} --concurrency ${concurrency} --mcp --latency --stats-csv-header http://${proxy_host}:${proxy_port}/mcp"'
+  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 16 --duration ${duration} --concurrency ${concurrency} --mcp --latency --stats-csv-header http://${proxy_host}:${proxy_port}/mcp"'

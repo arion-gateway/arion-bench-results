@@ -1,5 +1,4 @@
 # Converted from local_perf_sweep_arion_h2tls_h2tls.py
-# reviewed: gen_cores 16-38:2 -> 0-62:2 (generator must not be the bottleneck without compio)
 name: h2tls_h2tls_arion
 
 vars:
@@ -11,9 +10,9 @@ vars:
   nofile: 1000000
   statico: '/home/francesco/.cargo/bin/statico'
   plumbrs: '/home/francesco/.cargo/bin/plumbrs'
-  backend_cores: '40-62:2'
-  proxy_cores: '17-63:2'
-  gen_cores: '0-62:2'
+  backend_cores: '32-62:2'
+  proxy_cores: '1-63:2'
+  gen_cores: '0-30:2'
 
 sweep:
   rpc: [4294967295, 100, 10, 1]
@@ -25,11 +24,11 @@ settings:
 
 services:
   - name: backend
-    command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${backend_cores} ${statico} --ports ${backend_port} --threads 12 --cert /etc/nginx/certs/cnpp1.crt --key /etc/nginx/certs/cnpp1.key --http2"'
+    command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${backend_cores} ${statico} --ports ${backend_port} --threads 16 --cert /etc/nginx/certs/cnpp1.crt --key /etc/nginx/certs/cnpp1.key --http2"'
     ready: ${backend_host}:${backend_port}
   - name: proxy
     command: 'sudo -n ip netns exec proxy bash -c "ulimit -n ${nofile}; exec taskset -c ${proxy_cores} /home/francesco/code/arion/target/release-max/arion -c /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/arion-h2.yaml"'
     ready: ${proxy_host}:${proxy_port}
 
 generator:
-  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 32 --duration ${duration} --concurrency ${concurrency} --rpc ${rpc} --insecure --http2 --latency --stats-csv-header https://${proxy_host}:${proxy_port}/h2"'
+  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 16 --duration ${duration} --concurrency ${concurrency} --rpc ${rpc} --insecure --http2 --latency --stats-csv-header https://${proxy_host}:${proxy_port}/h2"'

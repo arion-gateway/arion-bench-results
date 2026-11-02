@@ -18,8 +18,8 @@
 # Arion does not need it and rejects `bootstrap_extensions`, so it is left commented out here.
 
 runtime:
-  num_cpus: 24
-  num_runtimes: 24
+  num_cpus: 32
+  num_runtimes: 32
   event_interval: 31            # estimated optimal value
   global_queue_interval: null   # default
   max_io_events_per_tick: null  # default

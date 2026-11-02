@@ -17,9 +17,9 @@ vars:
   nofile: 1000000
   statico: '/home/francesco/.cargo/bin/statico'
   plumbrs: '/home/francesco/.cargo/bin/plumbrs'
-  backend_cores: '40-62:2'
-  proxy_cores: '17-63:2'
-  gen_cores: '0-62:2'
+  backend_cores: '32-62:2'
+  proxy_cores: '1-63:2'
+  gen_cores: '0-30:2'
 
 sweep:
   rpc: [4294967295]
@@ -31,11 +31,11 @@ settings:
 
 services:
   - name: backend
-    command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${backend_cores} ${statico} --ports ${backend_port} --threads 12 --mcp-everything"'
+    command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${backend_cores} ${statico} --ports ${backend_port} --threads 16 --mcp-everything"'
     ready: ${backend_host}:${backend_port}
   - name: proxy
     command: 'sudo -n ip netns exec proxy bash -c "ulimit -n ${nofile}; exec taskset -c ${proxy_cores} /home/francesco/code/agentgateway/target/release/agentgateway -f /home/francesco/code/arion-bench-results/202608_bench/proxy-configs/agentgateway-h1.yaml"'
     ready: ${proxy_host}:${proxy_port}
 
 generator:
-  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 32 --duration ${duration} --concurrency ${concurrency} --mcp --latency --stats-csv-header http://${proxy_host}:${proxy_port}/mcp"'
+  command: 'sudo -n bash -c "ulimit -n ${nofile}; exec taskset -c ${gen_cores} ${plumbrs} --threads 16 --duration ${duration} --concurrency ${concurrency} --mcp --latency --stats-csv-header http://${proxy_host}:${proxy_port}/mcp"'

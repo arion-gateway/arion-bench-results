@@ -1,6 +1,6 @@
 runtime:
-  num_cpus: 24
-  num_runtimes: 24
+  num_cpus: 32
+  num_runtimes: 32
   num_service_threads: 8
   affinity_strategy:
     type: auto

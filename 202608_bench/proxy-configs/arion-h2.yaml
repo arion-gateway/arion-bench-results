@@ -1,6 +1,6 @@
 runtime:
-  num_cpus: 24 
-  num_runtimes: 24
+  num_cpus: 32 
+  num_runtimes: 32
   num_service_threads: 1
   global_queue_interval: 1021 
   max_io_events_per_tick: 128 
